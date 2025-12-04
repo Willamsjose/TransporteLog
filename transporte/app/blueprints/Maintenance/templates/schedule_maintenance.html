@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message|safe }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }} 
+
+        <fieldset>
+            <legend>Agendamento</legend>
+            <p>{{ form.id_veiculo.label }}<br>{{ form.id_veiculo() }}</p>
+            <p>{{ form.descricao.label }}<br>{{ form.descricao(size=50) }}</p>
+            <p>{{ form.tipo_manutencao.label }}<br>{{ form.tipo_manutencao() }}</p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Regras Preditivas</legend>
+            <p>{{ form.km_agendado.label }}<br>{{ form.km_agendado(size=10) }}</p>
+            <p>{{ form.data_agendada.label }}<br>{{ form.data_agendada() }}</p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Configuração de Alerta</legend>
+            <p>{{ form.intervalo_alerta.label }}<br>{{ form.intervalo_alerta(size=10) }}
+            <small>{{ form.intervalo_alerta.description }}</small>
+            </p>
+        </fieldset>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p><a href="{{ url_for('maintenance.index') }}">Voltar para Manutenção</a></p>
+</body>
+</html>

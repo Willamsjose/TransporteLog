@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message|safe }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} 
+
+        <fieldset>
+            <legend>Dados do Abastecimento</legend>
+            <p>{{ form.id_veiculo.label }}<br>{{ form.id_veiculo() }}</p>
+
+            <p>{{ form.data_abastecimento.label }}<br>{{ form.data_abastecimento() }}</p>
+
+            <p>{{ form.km_registro.label }}<br>{{ form.km_registro(size=10) }}
+            {% if previous_km %}
+                <small>(Última KM registrada: {{ previous_km }})</small>
+            {% endif %}
+            </p>
+
+            <p>{{ form.litros.label }}<br>{{ form.litros(size=10) }}</p>
+
+            <p>{{ form.valor_litro.label }}<br>{{ form.valor_litro(size=10) }}</p>
+
+            <p>{{ form.local_abastecimento.label }}<br>{{ form.local_abastecimento(size=32) }}</p>
+            
+            <p>
+                {{ form.is_tanque_cheio.label }}<br>
+                {{ form.is_tanque_cheio() }}
+                <small> (Necessário para cálculo de Km/L)</small>
+            </p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Anexo (Nota Fiscal)</legend>
+            <p>
+                {{ form.nota_fiscal_file.label }}<br>
+                {{ form.nota_fiscal_file() }}
+            </p>
+        </fieldset>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p><a href="{{ url_for('auth.dashboard') }}">Voltar ao Dashboard</a></p>
+</body>
+</html>

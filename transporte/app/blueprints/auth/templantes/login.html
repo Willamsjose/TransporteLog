@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>Login de Usuário</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }} <p>
+            {{ form.email.label }}<br>
+            {{ form.email(size=32) }}<br>
+            {% for error in form.email.errors %}<span>[{{ error }}]</span>{% endfor %}
+        </p>
+        <p>
+            {{ form.senha.label }}<br>
+            {{ form.senha(size=32) }}<br>
+            {% for error in form.senha.errors %}<span>[{{ error }}]</span>{% endfor %}
+        </p>
+        <p>
+            {{ form.lembrar_me() }}
+            {{ form.lembrar_me.label }}
+        </p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p>Não tem conta? <a href="{{ url_for('auth.register_empresa') }}">Cadastre sua empresa aqui</a>.</p>
+</body>
+</html>

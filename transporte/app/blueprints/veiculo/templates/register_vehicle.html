@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }} 
+
+        <p>{{ form.placa.label }}<br>{{ form.placa(size=32) }}</p>
+        <p>{{ form.marca.label }}<br>{{ form.marca(size=32) }}</p>
+        <p>{{ form.modelo.label }}<br>{{ form.modelo(size=32) }}</p>
+        <p>{{ form.ano.label }}<br>{{ form.ano(size=10) }}</p>
+        <p>{{ form.tipo_combustivel.label }}<br>{{ form.tipo_combustivel() }}</p>
+        <p>{{ form.km_atual.label }}<br>{{ form.km_atual(size=10) }}</p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p><a href="{{ url_for('vehicle.list_vehicles') }}">Ver Frota</a></p>
+</body>
+</html>

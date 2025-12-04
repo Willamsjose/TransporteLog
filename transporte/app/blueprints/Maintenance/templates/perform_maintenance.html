@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    {% if id_preditivo %}
+        <p>Registrando a execução da Manutenção Preditiva #{{ id_preditivo }}.</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} 
+
+        <fieldset>
+            <legend>Detalhes da Execução</legend>
+            <p>{{ form.id_veiculo.label }}<br>{{ form.id_veiculo() }}</p>
+            <p>{{ form.data_realizacao.label }}<br>{{ form.data_realizacao() }}</p>
+            <p>{{ form.descricao_servico.label }}<br>{{ form.descricao_servico() }}</p>
+            <p>{{ form.custo_total.label }}<br>{{ form.custo_total(size=10) }}</p>
+            <p>{{ form.oficina_responsavel.label }}<br>{{ form.oficina_responsavel(size=50) }}</p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Anexo (Nota Fiscal)</legend>
+            <p>
+                {{ form.nota_fiscal_file.label }}<br>
+                {{ form.nota_fiscal_file() }}
+            </p>
+        </fieldset>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p><a href="{{ url_for('maintenance.index') }}">Voltar para Manutenção</a></p>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Cadastro de Nova Empresa</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }} <fieldset>
+            <legend>Dados da Empresa</legend>
+            <div>
+                {{ form.nome_empresa.label }}
+                {{ form.nome_empresa() }}
+                {% for error in form.nome_empresa.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+            <div>
+                {{ form.cnpj.label }}
+                {{ form.cnpj() }}
+                {% for error in form.cnpj.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Dados do Administrador</legend>
+            <div>
+                {{ form.nome_admin.label }}
+                {{ form.nome_admin() }}
+                {% for error in form.nome_admin.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+            <div>
+                {{ form.email.label }}
+                {{ form.email() }}
+                {% for error in form.email.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+            <div>
+                {{ form.senha.label }}
+                {{ form.senha() }}
+                {% for error in form.senha.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+            <div>
+                {{ form.confirmar_senha.label }}
+                {{ form.confirmar_senha() }}
+                {% for error in form.confirmar_senha.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+        </fieldset>
+
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

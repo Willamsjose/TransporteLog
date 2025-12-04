@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    <p><a href="{{ url_for('maintenance.schedule_maintenance') }}">➕ Agendar Nova Manutenção Preditiva</a> | 
+       <a href="{{ url_for('maintenance.perform_maintenance') }}">📝 Registrar Manutenção Realizada</a></p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message|safe }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <hr>
+    
+    <h2>🚨 Alertas de Manutenção Próxima (Baseado em KM ou Data)</h2>
+    
+    {% if alerts %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Descrição</th>
+                    <th>Alerta</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr>
+                    <td>{{ alert.veiculo }}</td>
+                    <td>{{ alert.descricao }}</td>
+                    <td><strong>{{ alert.urgency }}</strong></td>
+                    <td><a href="{{ url_for('maintenance.perform_maintenance', preditivo=alert.id) }}">Registrar Realização</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>🎉 Nenhum alerta de manutenção preditiva encontrado no momento!</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('auth.dashboard') }}">Voltar ao Dashboard</a></p>
+</body>
+</html>

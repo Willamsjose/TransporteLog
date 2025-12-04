@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>Frota da Empresa</h1>
+
+    <p><a href="{{ url_for('vehicle.register_vehicle') }}">➕ Cadastrar Novo Veículo</a></p>
+    <p><a href="{{ url_for('auth.dashboard') }}">Voltar ao Dashboard</a></p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    {% if veiculos %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Ano</th>
+                    <th>Combustível</th>
+                    <th>KM Atual</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos %}
+                <tr>
+                    <td>{{ veiculo.placa }}</td>
+                    <td>{{ veiculo.marca }}</td>
+                    <td>{{ veiculo.modelo }}</td>
+                    <td>{{ veiculo.ano }}</td>
+                    <td>{{ veiculo.tipo_combustivel }}</td>
+                    <td>{{ veiculo.km_atual }}</td>
+                    <td>
+                        <a href="#">Editar</a> | 
+                        <a href="#">Abastecer</a> | 
+                        <a href="#">Manutenção</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Sua frota está vazia. Cadastre o primeiro veículo!</p>
+    {% endif %}
+</body>
+</html>

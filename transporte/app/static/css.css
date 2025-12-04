@@ -1,0 +1,13 @@
+/* Flash message styles extracted from login.html */
+.flashes { list-style: none; padding: 0; margin: 0 0 1rem 0; }
+.flashes li { margin: .4em 0; padding: .4em .6em; border-radius: 4px; }
+.flashes li.danger { background: #ffe6e6; color: #a30000; }
+.flashes li.success { background: #e6ffea; color: #0a6b18; }
+.flashes li.info { background: #e6f0ff; color: #084b8a; }
+.flashes li.warning { background: #fff3cd; color: #856404; }
+
+/* Dashboard KPI and alert styles */
+.kpi-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; display: inline-block; width: 30%; text-align: center; margin-right: 2%; }
+.kpi-box h3 { margin-top: 0; }
+.alert-item { background-color: #ffe599; border-left: 5px solid #ff9900; padding: 10px; margin-bottom: 5px; }
+

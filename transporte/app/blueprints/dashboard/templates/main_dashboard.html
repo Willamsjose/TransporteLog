@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+</head>
+<body>
+    <h1>Dashboard Principal - Empresa {{ current_user.nome }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category|default('info') }}">{{ message|safe }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <p>Ações Rápidas: 
+        <a href="{{ url_for('vehicle.register_vehicle') }}">Cadastrar Veículo</a> | 
+        <a href="{{ url_for('fueling.register_fueling') }}">Registrar Abastecimento</a> | 
+        <a href="{{ url_for('maintenance.schedule_maintenance') }}">Agendar Manutenção</a> |
+        <a href="{{ url_for('auth.logout') }}">Sair</a>
+    </p>
+
+    <h2>Resumo de Custos (Geral)</h2>
+    <div class="kpi-box">
+        <h3>Custo Total da Frota</h3>
+        <strong>R$ {{ "{:,.2f}".format(custo_total_geral) }}</strong>
+    </div>
+    <div class="kpi-box">
+        <h3>Custo Abastecimento</h3>
+        <strong>R$ {{ "{:,.2f}".format(fueling_summary.total_frota) }}</strong>
+    </div>
+    <div class="kpi-box">
+        <h3>Custo Manutenção</h3>
+        <strong>R$ {{ "{:,.2f}".format(maintenance_summary.total_frota) }}</strong>
+    </div>
+    
+    <hr>
+    
+    <h2>Análise de Custos por Veículo</h2>
+    
+    {% if veiculos_data %}
+        <table border="1" width="100%">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Custo Abastecimento (R$)</th>
+                    <th>Custo Manutenção (R$)</th>
+                    <th>Total de Custos (R$)</th>
+                    <th>Média Km/L</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos_data %}
+                <tr>
+                    <td><strong>{{ veiculo.placa }}</strong></td>
+                    <td>{{ "{:,.2f}".format(veiculo.custo_abastecimento) }}</td>
+                    <td>{{ "{:,.2f}".format(veiculo.custo_manutencao) }}</td>
+                    <td><strong>R$ {{ "{:,.2f}".format(veiculo.custo_abastecimento + veiculo.custo_manutencao) }}</strong></td>
+                    <td>{{ "{:,.2f}".format(veiculo.media_km_l) }} Km/L</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Cadastre veículos e registros de abastecimento/manutenção para ver os relatórios.</p>
+    {% endif %}
+
+    <hr>
+    
+    <h2>🚨 Alertas de Manutenção (Próximos)</h2>
+    
+    {% if alerts %}
+        {% for alert in alerts %}
+        <div class="alert-item">
+            Veículo: <strong>{{ alert.veiculo }}</strong> | Serviço: {{ alert.descricao }} | Urgência: <strong>{{ alert.urgency }}</strong> 
+            <a href="{{ url_for('maintenance.perform_maintenance', preditivo=alert.id) }}">Registrar</a>
+        </div>
+        {% endfor %}
+        <p><a href="{{ url_for('maintenance.index') }}">Ver todos os agendamentos de manutenção</a></p>
+    {% else %}
+        <p>Nenhum alerta de manutenção pendente.</p>
+    {% endif %}
+</body>
+</html>
