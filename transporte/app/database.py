@@ -20,3 +20,11 @@ def get_supabase_client() -> Client:
 def init_app(app):
     # Aqui podemos adicionar funções para fechar a conexão no final do request, se usarmos um pool mais tradicional.
     pass
+
+
+def get_safe_supabase_client() -> Client:
+    """Compatibilidade: devolve o cliente Supabase usando a mesma lógica de get_supabase_client.
+    Algumas partes do código importam `get_safe_supabase_client` do módulo `database`.
+    Esta função é um wrapper simples para manter compatibilidade.
+    """
+    return get_supabase_client()
