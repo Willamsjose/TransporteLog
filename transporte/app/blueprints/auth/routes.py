@@ -25,36 +25,70 @@ def register_empresa():
     if form.validate_on_submit():
         try:
             supabase = get_safe_supabase_client()
-            
-            # Verificar se email já existe
-            response = supabase.table('empresa').select('id').eq('email', form.email.data).execute()
+
+            # Preferir usar service_role client para checagens/escritas server-side quando disponível
+            service_key = current_app.config.get('SUPABASE_KEY_SERVICE_ROLE')
+            if service_key:
+                svc = create_client(current_app.config.get('SUPABASE_URL'), service_key)
+            else:
+                svc = supabase
+
+            # Verificar se email já existe (procurar na tabela 'usuario')
+            response = svc.table('usuario').select('id').eq('email', form.email.data).execute()
             if response.data:
                 flash('Este email já está registrado.', 'danger')
                 return render_template('register_empresa.html', title='Cadastro de Empresa', form=form)
             
-            # Criar novo registro de empresa
+            # Criar novo registro de empresa (somente campos existentes na tabela 'empresa')
             empresa_data = {
                 'nome': form.nome.data,
+                'cnpj': form.cnpj.data or None,
+            }
+
+            # Use the previously created svc (service or anon) for insert
+            resp_insert = svc.table('empresa').insert(empresa_data).execute()
+
+            if getattr(resp_insert, 'error', None):
+                flash('Erro ao cadastrar empresa. Tente novamente.', 'danger')
+                return render_template('register_empresa.html', title='Cadastro de Empresa', form=form)
+
+            # Tentar recuperar o id criado pelo insert: preferir cnpj quando disponível
+            try:
+                if empresa_data.get('cnpj'):
+                    resp_id = svc.table('empresa').select('id').eq('cnpj', empresa_data['cnpj']).limit(1).execute()
+                else:
+                    # fallback: procurar por nome
+                        resp_id = svc.table('empresa').select('id').eq('nome', empresa_data['nome']).limit(1).execute()
+
+                if not getattr(resp_id, 'data', None):
+                    flash('Empresa criada, mas não foi possível recuperar o ID.', 'warning')
+                    return render_template('register_empresa.html', title='Cadastro de Empresa', form=form)
+                empresa_id = resp_id.data[0].get('id')
+            except Exception:
+                flash('Empresa criada, mas falha ao recuperar o ID.', 'warning')
+                return render_template('register_empresa.html', title='Cadastro de Empresa', form=form)
+
+            # Agora criar o usuário administrador em 'usuario' se a tabela suportar essas colunas
+            usuario_data = {
+                'nome': f"{form.nome.data} (admin)",
                 'email': form.email.data,
                 'senha_hash': generate_password_hash(form.senha.data),
-                'cnpj': form.cnpj.data or None,
-                'telefone': form.telefone.data or None,
+                'id_empresa': empresa_id,
             }
-            
-            # Se houver uma SERVICE_ROLE key nas configurações, use-a apenas para a operação de inserção
-            service_key = current_app.config.get('SUPABASE_KEY_SERVICE_ROLE')
-            if service_key:
-                # cria um cliente temporário com privilégios elevados (apenas em servidor)
-                svc = create_client(current_app.config.get('SUPABASE_URL'), service_key)
-                response = svc.table('empresa').insert(empresa_data).execute()
-            else:
-                response = supabase.table('empresa').insert(empresa_data).execute()
-            
-            if response.data:
-                flash('Empresa cadastrada com sucesso! Faça login para continuar.', 'success')
-                return redirect(url_for('auth.login'))
-            else:
-                flash('Erro ao cadastrar empresa. Tente novamente.', 'danger')
+
+            try:
+                if service_key:
+                    resp_user = svc.table('usuario').insert(usuario_data).execute()
+                else:
+                    resp_user = supabase.table('usuario').insert(usuario_data).execute()
+
+                if getattr(resp_user, 'error', None) or not getattr(resp_user, 'data', None):
+                    flash('Empresa criada mas falha ao criar usuário admin. Verifique o banco.', 'warning')
+                else:
+                    flash('Empresa e usuário admin cadastrados com sucesso! Faça login para continuar.', 'success')
+                    return redirect(url_for('auth.login'))
+            except Exception as e:
+                flash(f'Empresa cadastrada mas erro ao criar usuário admin: {e}', 'warning')
                 
         except Exception as e:
             flash(f'Erro ao processar registro: {str(e)}', 'danger')
@@ -76,8 +110,8 @@ def login():
         try:
             supabase = get_safe_supabase_client()
             
-            # Buscar usuário por email
-            response = supabase.table('empresa').select('*').eq('email', form.email.data).execute()
+            # Buscar usuário por email na tabela 'usuario'
+            response = supabase.table('usuario').select('*').eq('email', form.email.data).execute()
             
             if response.data and len(response.data) > 0:
                 user_data = response.data[0]
