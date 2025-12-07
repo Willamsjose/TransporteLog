@@ -1,3 +1,56 @@
+Transporte — Setup rápido
+=========================
+
+Passos para desenvolver e testar localmente (Windows / PowerShell):
+
+1) Ative o virtualenv da pasta `transporte`:
+
+```powershell
+& .\transporte\Scripts\Activate.ps1
+```
+
+2) Copie o exemplo de variáveis de ambiente para `.env` e preencha:
+
+```powershell
+copy .env.example .env
+```
+
+Edite `.env` e adicione `SUPABASE_URL`, `SUPABASE_KEY_SERVICE_ROLE` (ou `SUPABASE_KEY_ANON`) e `SECRET_KEY`.
+
+3) Instale dependências (opcional: use `dev-requirements.txt` no Windows):
+
+```powershell
+pip install -r transporte/requirements.txt
+# Para desenvolvimento Windows:
+pip install -r dev-requirements.txt
+```
+
+4) Rodar a aplicação localmente (desenvolvimento):
+
+```powershell
+$env:SUPABASE_URL = 'https://your.supabase.co'
+$env:SUPABASE_KEY_SERVICE_ROLE = 'sb_secret_...'
+$env:SECRET_KEY = 'uma_chave_local'
+& .\transporte\Scripts\python.exe .\transporte\app.py
+```
+
+5) Tests rápidos incluídos em `scripts/` (não versionados) e `dev-tools/` (versionado):
+
+- `dev-tools/insert_safe.py` — cria/usa uma `empresa` de teste e cria um `usuario` admin.
+- `scripts/test_supabase_connection.py` — test de conexão ao Supabase.
+- `scripts/test_register_via_route.py` — testa a rota de registro usando `Flask.test_client()`.
+
+6) Segurança:
+
+- Nunca comitar chaves (`SUPABASE_KEY_SERVICE_ROLE`) em repositórios. Use `.env` e `.gitignore`.
+- Se uma `service_role` foi exposta, rotacione(a) imediatamente no painel do Supabase.
+
+7) Deploy:
+
+- `wsgi.py` já expõe `application = create_app()` para hosts compatíveis com WSGI.
+- `requirements.txt` contém `gunicorn` (destinado a ambientes Linux). Para Windows, use `dev-requirements.txt`.
+
+Se quiser, eu posso: iniciar a app novamente, abrir um teste E2E no navegador (usando Selenium), ou preparar instruções de rotação de chave passo-a-passo.
 # Transporte com Flask - Sistema de Gestão de Transporte
 
 Sistema web desenvolvido em Flask para gestão de frota de veículos, abastecimento, manutenção preditiva e análise de custos.
