@@ -1,0 +1,3 @@
+# Windows/dev-only requirements
+waitress==2.1.2
+email-validator==2.3.0

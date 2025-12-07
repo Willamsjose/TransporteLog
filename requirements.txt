@@ -1,4 +1,9 @@
 Flask==3.1.2
+# `gunicorn` is used in production (Linux). On Windows `gunicorn` is not
+# available — for local Windows development use `python app.py` or consider
+# `waitress` as an alternative. Keep `gunicorn` for deploy targets that run
+# on Linux (e.g. Vercel). If you need a Windows-compatible dev server, add
+# a `dev-requirements.txt` with `waitress`.
 gunicorn==22.1.0
 python-dotenv==1.2.1
 
@@ -20,3 +25,7 @@ anyio==4.12.0
 certifi==2025.11.12
 
 # Add other dependencies present in transporte/requirements.txt if needed
+email-validator==2.3.0
+
+# Development-only requirements for Windows (optional):
+# Create `dev-requirements.txt` and install when developing on Windows.
