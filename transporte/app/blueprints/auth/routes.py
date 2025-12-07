@@ -27,7 +27,7 @@ def register_empresa():
             supabase = get_safe_supabase_client()
             
             # Verificar se email já existe
-            response = supabase.table('Empresa').select('id').eq('email', form.email.data).execute()
+            response = supabase.table('empresa').select('id').eq('email', form.email.data).execute()
             if response.data:
                 flash('Este email já está registrado.', 'danger')
                 return render_template('register_empresa.html', title='Cadastro de Empresa', form=form)
@@ -46,9 +46,9 @@ def register_empresa():
             if service_key:
                 # cria um cliente temporário com privilégios elevados (apenas em servidor)
                 svc = create_client(current_app.config.get('SUPABASE_URL'), service_key)
-                response = svc.table('Empresa').insert(empresa_data).execute()
+                response = svc.table('empresa').insert(empresa_data).execute()
             else:
-                response = supabase.table('Empresa').insert(empresa_data).execute()
+                response = supabase.table('empresa').insert(empresa_data).execute()
             
             if response.data:
                 flash('Empresa cadastrada com sucesso! Faça login para continuar.', 'success')
@@ -77,7 +77,7 @@ def login():
             supabase = get_safe_supabase_client()
             
             # Buscar usuário por email
-            response = supabase.table('Empresa').select('*').eq('email', form.email.data).execute()
+            response = supabase.table('empresa').select('*').eq('email', form.email.data).execute()
             
             if response.data and len(response.data) > 0:
                 user_data = response.data[0]
