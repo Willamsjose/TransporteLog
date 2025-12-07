@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, current_user, login_required
 from .forms import EmpresaRegisterForm, LoginForm
 from ...utils.data_access import get_safe_supabase_client
+from flask import current_app
+from supabase import create_client
 
 # Define o Blueprint 'auth'
 auth_bp = Blueprint('auth', __name__, template_folder='templantes', url_prefix='/auth')
@@ -39,7 +41,14 @@ def register_empresa():
                 'telefone': form.telefone.data or None,
             }
             
-            response = supabase.table('Empresa').insert(empresa_data).execute()
+            # Se houver uma SERVICE_ROLE key nas configurações, use-a apenas para a operação de inserção
+            service_key = current_app.config.get('SUPABASE_KEY_SERVICE_ROLE')
+            if service_key:
+                # cria um cliente temporário com privilégios elevados (apenas em servidor)
+                svc = create_client(current_app.config.get('SUPABASE_URL'), service_key)
+                response = svc.table('Empresa').insert(empresa_data).execute()
+            else:
+                response = supabase.table('Empresa').insert(empresa_data).execute()
             
             if response.data:
                 flash('Empresa cadastrada com sucesso! Faça login para continuar.', 'success')

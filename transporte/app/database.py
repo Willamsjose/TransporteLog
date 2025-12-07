@@ -24,11 +24,24 @@ def init_app(app):
 
 def get_safe_supabase_client() -> Client:
     """Compatibilidade: função auxiliar usada em várias partes do código.
-    Retorna o cliente Supabase, mas encapsula erros comuns e fornece uma mensagem
-    de erro mais clara caso as configurações não estejam presentes.
+    Retorna o cliente Supabase, mas faz checagens explícitas nas configurações
+    para fornecer mensagens de erro claras quando variáveis de ambiente
+    estiverem faltando ou o contexto da app não estiver disponível.
     """
+    # Verifica se as configurações básicas estão presentes para dar mensagens claras
+    try:
+        url = current_app.config.get('SUPABASE_URL', '')
+        anon = current_app.config.get('SUPABASE_KEY_ANON', '')
+    except RuntimeError:
+        # current_app not available
+        raise RuntimeError('Supabase não inicializado: `current_app` não disponível no contexto atual.')
+
+    if not url:
+        raise RuntimeError('Variável de ambiente SUPABASE_URL não encontrada. Defina SUPABASE_URL.')
+    if not anon:
+        raise RuntimeError('Variável de ambiente SUPABASE_KEY_ANON não encontrada. Defina SUPABASE_KEY_ANON (ou SUPABASE_KEY_SERVICE_ROLE para operações de teste).')
+
     try:
         return get_supabase_client()
     except Exception as e:
-        # Relevante durante import-time se current_app não estiver disponível
         raise RuntimeError(f"Não foi possível inicializar o cliente Supabase: {e}")
