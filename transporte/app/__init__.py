@@ -1,6 +1,6 @@
 # logistica_app/app/__init__.py (Atualizado)
 
-from flask import Flask
+from flask import Flask, url_for
 from config import Config
 from flask_login import LoginManager # NOVO IMPORT
 from . import database 
@@ -49,6 +49,16 @@ def create_app(config_class=Config):
     # Atualiza a rota inicial para dar opções
     @app.route('/')
     def index():
-        return "Aplicação de Logística rodando! Acesse: /auth/register para cadastrar uma empresa ou /auth/login para entrar."
+        """Página inicial simples com links para cadastro/login."""
+        # O endpoint de registro foi nomeado como 'register_empresa' nas rotas
+        register_url = url_for('auth.register_empresa')
+        login_url = url_for('auth.login')
+        return (
+            f"<html><head><meta charset='utf-8'><title>Transporte</title></head>"
+            f"<body style='font-family:Segoe UI,Calibri,Arial;margin:20px'>"
+            f"<h2>Aplicação de Logística rodando!</h2>"
+            f"<p>Acesse:<br><a href=\"{register_url}\">Cadastrar empresa</a> — ou — <a href=\"{login_url}\">Entrar (login)</a></p>"
+            f"</body></html>"
+        )
         
     return app

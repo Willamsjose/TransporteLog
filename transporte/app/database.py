@@ -23,8 +23,12 @@ def init_app(app):
 
 
 def get_safe_supabase_client() -> Client:
-    """Compatibilidade: devolve o cliente Supabase usando a mesma lógica de get_supabase_client.
-    Algumas partes do código importam `get_safe_supabase_client` do módulo `database`.
-    Esta função é um wrapper simples para manter compatibilidade.
+    """Compatibilidade: função auxiliar usada em várias partes do código.
+    Retorna o cliente Supabase, mas encapsula erros comuns e fornece uma mensagem
+    de erro mais clara caso as configurações não estejam presentes.
     """
-    return get_supabase_client()
+    try:
+        return get_supabase_client()
+    except Exception as e:
+        # Relevante durante import-time se current_app não estiver disponível
+        raise RuntimeError(f"Não foi possível inicializar o cliente Supabase: {e}")

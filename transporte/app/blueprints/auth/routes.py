@@ -7,7 +7,7 @@ from .forms import EmpresaRegisterForm, LoginForm
 from ...utils.data_access import get_safe_supabase_client
 
 # Define o Blueprint 'auth'
-auth_bp = Blueprint('auth', __name__, template_folder='templates', url_prefix='/auth')
+auth_bp = Blueprint('auth', __name__, template_folder='templantes', url_prefix='/auth')
 
 # -----------------
 # 1. ROTA DE CADASTRO DE EMPRESA

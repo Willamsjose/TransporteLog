@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+    <style>/* pequeno ajuste para legibilidade */
+        body{font-family:Segoe UI,Calibri,Arial;margin:20px}
+        .flashes{list-style:none;padding:0}
+        .flashes li{margin:6px 0}
+    </style>
 </head>
 <body>
     <h1>Cadastro de Nova Empresa</h1>
@@ -11,7 +17,7 @@
         {% if messages %}
             <ul class="flashes">
             {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
+                <li class="{{ category|default('info') }}">{{ message }}</li>
             {% endfor %}
             </ul>
         {% endif %}
@@ -22,33 +28,38 @@
         <fieldset>
             <legend>Dados da Empresa</legend>
             <div>
-                {{ form.nome.label }}
-                {{ form.nome() }}
+                {{ form.nome.label }}<br>
+                {{ form.nome(size=60) }}<br>
                 {% for error in form.nome.errors %}<span>[{{ error }}]</span>{% endfor %}
             </div>
             <div>
-                {{ form.cnpj.label }}
-                {{ form.cnpj() }}
+                {{ form.cnpj.label }}<br>
+                {{ form.cnpj(size=30) }}<br>
                 {% for error in form.cnpj.errors %}<span>[{{ error }}]</span>{% endfor %}
             </div>
         </fieldset>
 
         <fieldset>
-            <legend>Credenciais</legend>
+            <legend>Dados do Administrador</legend>
             <div>
-                {{ form.email.label }}
-                {{ form.email() }}
+                {{ form.email.label }}<br>
+                {{ form.email(size=60) }}<br>
                 {% for error in form.email.errors %}<span>[{{ error }}]</span>{% endfor %}
             </div>
             <div>
-                {{ form.senha.label }}
-                {{ form.senha() }}
+                {{ form.senha.label }}<br>
+                {{ form.senha(size=32) }}<br>
                 {% for error in form.senha.errors %}<span>[{{ error }}]</span>{% endfor %}
             </div>
             <div>
-                {{ form.confirmar_senha.label }}
-                {{ form.confirmar_senha() }}
+                {{ form.confirmar_senha.label }}<br>
+                {{ form.confirmar_senha(size=32) }}<br>
                 {% for error in form.confirmar_senha.errors %}<span>[{{ error }}]</span>{% endfor %}
+            </div>
+            <div>
+                {{ form.telefone.label }}<br>
+                {{ form.telefone(size=30) }}<br>
+                {% for error in form.telefone.errors %}<span>[{{ error }}]</span>{% endfor %}
             </div>
         </fieldset>
 

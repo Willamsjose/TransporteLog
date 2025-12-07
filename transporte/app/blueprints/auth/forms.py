@@ -7,16 +7,16 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Regexp
 
 class EmpresaRegisterForm(FlaskForm):
     """
-    Formulário para cadastro de empresa.
-    Campos básicos: nome, email, senha, confirmar senha, cnpj e telefone.
+    Formulário para registro de uma nova Empresa.
+    Campos esperados pelas rotas: nome, email, senha, cnpj, telefone
     """
-    nome = StringField('Nome', validators=[DataRequired(), Length(max=255)])
+    nome = StringField('Nome da Empresa', validators=[DataRequired(), Length(max=255)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
-    senha = PasswordField('Senha', validators=[DataRequired(), Length(min=6)])
-    confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('senha', message='As senhas devem coincidir')])
-    cnpj = StringField('CNPJ', validators=[Length(max=20)], default='')
-    telefone = StringField('Telefone', validators=[Length(max=20)], default='')
-    submit = SubmitField('Cadastrar')
+    senha = PasswordField('Senha', validators=[DataRequired(), Length(min=6, max=128)])
+    confirmar_senha = PasswordField('Confirme a Senha', validators=[DataRequired(), EqualTo('senha', message='As senhas devem coincidir')])
+    cnpj = StringField('CNPJ', validators=[Length(max=20)], description='Opcional')
+    telefone = StringField('Telefone', validators=[Length(max=30)], description='Opcional')
+    submit = SubmitField('Cadastrar Empresa')
 
 # NOVO FORMULÁRIO
 class LoginForm(FlaskForm):
